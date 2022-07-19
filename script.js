@@ -1,7 +1,9 @@
 const buttons = document.querySelectorAll('.button');
 const display = document.querySelector('.display');
 const pressButtonColor = 'rgb(255,217,119)';
-const defaultButtonColor = 'rgb(255, 244, 234)';
+const numberButtonColor = 'rgb(242,173,0)';
+const operatorButtonColor = 'rgb(255, 149, 0)';
+const clearButtonColor = 'rgb(80, 80, 80)';
 let retainResult = false;
 let stack = [0];
 let buttonPressed;
@@ -58,11 +60,24 @@ buttons.forEach((button) => {
 })
 
 function changeColor(e) {
-    e.target.style.backgroundColor = pressButtonColor;
+    if (e.target.id == 'clear') {
+        e.target.style.backgroundColor = 'rgb(217, 220, 224)';
+    }
+    else {
+        e.target.style.backgroundColor = pressButtonColor;
+    }
 }
 
 function changeBackColor(e) {
-    e.target.style.backgroundColor = defaultButtonColor;
+    if (e.target.classList.contains('operator')) {
+        e.target.style.backgroundColor = operatorButtonColor;
+    }
+    else if (e.target.id == 'clear') {
+        e.target.style.backgroundColor = 'rgb(80, 80, 80)';
+    }
+    else {
+        e.target.style.backgroundColor = numberButtonColor;
+    }
 }
 
 // stack will contain Number type for numbers 
@@ -73,13 +88,16 @@ function addToStack(input) {
     let b;
     let operator;
     if (Number(input) || Number(input) == 0) { // input is a number
+        retainResult = false;
         if (Number(prev) || prev == 0) { // prev is a number
             stack.pop();
             prev = (Number(prev) * 10) + Number(input);
             stack.push(prev);
+            displayResult(prev);
         }
         else { // prev is operator or stack is empty
             stack.push(Number(input));
+            displayResult(Number(input));
         }
     }
     else {
@@ -134,3 +152,4 @@ function addToStack(input) {
 function displayResult(result) {
     display.textContent = String(result);
 }
+
