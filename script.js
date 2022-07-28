@@ -87,10 +87,9 @@ function addToStack(input) {
     let a;
     let b;
     let operator;
-    if (Number(input) || input == '0') { // input is a number
+    if (isNumber(input)) { // input is a number
         retainResult = false;
-        if (checkDecimalPoint(prev)) { // prev has decimal point
-            console.log('decimal here');
+        if (hasDecimalPoint(prev)) { // prev has decimal point
             stack.pop();
             prev += input;
             stack.push(prev);
@@ -116,23 +115,11 @@ function addToStack(input) {
             displayResult(operate(a, b, operator));
             retainResult = true;
         }
-        else if (!Number(prev) && prev != '0') { // prev is an operator
+        else if (isOperator(prev)) { // prev is an operator
             operator = stack.pop();
             b = Number(stack.pop());
             stack = ['0'];
             addToStack(operate(b, b, operator));
-        }
-    }
-    else if (input == ".") { // input is decimal
-        if (!Number(prev) && prev != '0') { // prev is an operator 
-            stack.push('0');
-            displayResult('0.');
-        }
-        else { // prev is number
-            stack.pop();
-            prev += "."
-            stack.push(prev);
-            displayResult(prev);
         }
     }
     else if (input == "AC") { // input is reset
@@ -140,7 +127,42 @@ function addToStack(input) {
         display.textContent = '0';
     }
     else { // input is an operator
-        if (stack.length == 3) { // have to evaluate and update
+        if (input == "+/-") { // operator is change sign
+            if (isOperator(prev)) { // prev is an operator
+                b = stack.pop();
+                a = stack.pop();
+                a = String(Number(a) * -1);
+                stack.push(a);
+                stack.push(b);
+                displayResult(a);
+            }
+            else if (retainResult) {
+                retainResult = false;
+                prev = display.textContent;
+                prev = String(Number(prev) * -1);
+                stack.push(prev);
+                displayResult(prev);
+            }
+            else { // prev is number    
+                stack.pop();
+                prev = String(Number(prev) * -1);
+                stack.push(prev);
+                displayResult(prev);
+            }
+        }
+        else if (input == ".") { // operator is decimal
+            if (isOperator(prev)) { // prev is an operator 
+                stack.push('0');
+                displayResult('0.');
+            }
+            else { // prev is number
+                stack.pop();
+                prev += "."
+                stack.push(prev);
+                displayResult(prev);
+            }
+        }
+        else if (stack.length == 3) { // have to evaluate and update
             b = stack.pop();
             operator = stack.pop();
             a = stack.pop();
@@ -150,7 +172,7 @@ function addToStack(input) {
             addToStack(input);
         }
         else { // add into stack
-            if (!Number(prev) && prev != '0') { // prev is an operator
+            if (isOperator(prev)) { // prev is an operator
                 stack.pop();  // remove previous operator
             }
             if (retainResult) {
@@ -173,7 +195,7 @@ function displayResult(result) {
 
 
 // check if input has decimal point
-function checkDecimalPoint(input) {
+function hasDecimalPoint(input) {
     for (let i = 0; i < input.length; i++) {
         if (input[i] == '.') {
             return true;
@@ -182,3 +204,16 @@ function checkDecimalPoint(input) {
     return false;
 }
 
+function isOperator(input) {
+    if (!Number(input) && input != '0') {
+        return true;
+    }
+    return false;
+}
+
+function isNumber(input) {
+    if (Number(input) || input == '0') {
+        return true;
+    }
+    return false;
+}
