@@ -188,11 +188,14 @@ function addToStack(input) {
     }
 }
 
+
+
+// AUXILIARY FUNCTIONS
+
 // display result
 function displayResult(result) {
     display.textContent = String(result);
 }
-
 
 // check if input has decimal point
 function hasDecimalPoint(input) {
